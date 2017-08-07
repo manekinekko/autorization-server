@@ -1,0 +1,1 @@
+./mvnw -DskipTests spring-boot:run
