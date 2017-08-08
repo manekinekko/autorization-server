@@ -54,9 +54,6 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated();
-      
-      // disable CSRF for GAE
-      http.csrf().disable();
     }
 
     @Override
@@ -96,7 +93,7 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-      endpoints.authenticationManager(authenticationManager).accessTokenConverter(symmetricAccessTokenConverter());
+      endpoints.authenticationManager(authenticationManager).accessTokenConverter(asymmetricAccessTokenConverter());
     }
 
     @Override
