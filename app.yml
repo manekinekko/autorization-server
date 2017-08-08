@@ -1,0 +1,6 @@
+runtime: java
+env: standard
+threadsafe: true
+automatic_scaling:
+  min_num_instances: 2
+  max_num_instances: 3
