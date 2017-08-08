@@ -54,12 +54,16 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated();
+      
+      // disable CSRF for GAE
+      http.csrf().disable();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
       auth.parentAuthenticationManager(authenticationManager);
     }
+
   }
 
   @Configuration
