@@ -1,7 +1,7 @@
 package demo;
 
 import java.security.KeyPair;
-
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
@@ -20,6 +20,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Controller;
@@ -84,6 +86,17 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
       return converter;
     }
 
+    @Bean
+    protected JwtAccessTokenConverter jwtTokenEnhancer() {
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setSigningKey("my_signing_key");
+        return converter;
+    }
+
+    @Bean public TokenEnhancer customTokenEnhancer() {
+        return new CustomTokenEnhancer();
+    }
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
       clients.inMemory().withClient("demo-client-123xyz").secret("demo-client-123xyz")
@@ -93,8 +106,16 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-      endpoints.authenticationManager(authenticationManager).accessTokenConverter(asymmetricAccessTokenConverter());
-    }
+      
+      TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
+      enhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer(), asymmetricAccessTokenConverter()));
+
+      endpoints
+        .authenticationManager(authenticationManager)
+        .tokenEnhancer(enhancerChain)
+        .accessTokenConverter(asymmetricAccessTokenConverter());
+
+   }
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {

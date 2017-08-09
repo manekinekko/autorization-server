@@ -23,8 +23,8 @@ public class InjectBasicCredentialFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) servletRequest;
-        // String login = "user-with-authorization-code";
-        // String password= "51fe5aa0-8c1a-4044-901e-74daf5b451db";
+        // String login = "user";
+        // String password= "password";
 
         String login = req.getParameter("client_id");
         String password = req.getParameter("client_secret");
@@ -33,7 +33,6 @@ public class InjectBasicCredentialFilter implements Filter {
 
         if(req.getServletPath().contains("oauth/token")) {
             HeaderMapRequestWrapper requestWrapper = new HeaderMapRequestWrapper(req);
-            String remote_addr = servletRequest.getRemoteAddr();
             requestWrapper.addHeader("Authorization", "Basic " + new String(encodedBytes));
             filterChain.doFilter(requestWrapper, servletResponse);
         } else {
