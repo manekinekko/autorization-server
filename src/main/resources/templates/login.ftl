@@ -23,20 +23,20 @@
                 <p>
                 </p>
                 <div class="mdl-textfield mdl-js-textfield">
-                    <input class="mdl-textfield__input" type="text" id="username">
+                    <input class="mdl-textfield__input" type="text" id="username" name="username">
                     <label class="mdl-textfield__label" for="username">Username</label>
                 </div>
                 <p></p>
                 <p>
                 </p>
                 <div class="mdl-textfield mdl-js-textfield">
-                    <input class="mdl-textfield__input" type="password" id="password">
+                    <input class="mdl-textfield__input" type="password" id="password" name="password">
                     <label class="mdl-textfield__label" for="password">Password</label>
                 </div>
                 <p></p>
             </div>
             <div class="mdl-card__actions mdl-card--border">
-                <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">LOGIN</button>
+                <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" type="submit">LOGIN</button>
             </div>
             <input type="hidden" id="csrf_token" name="${_csrf.parameterName}" value="${_csrf.token}" />
         </form>
