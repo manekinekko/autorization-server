@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
-public class CustomTokenEnhancer implements TokenEnhancer {
+public class CustomTokenEnhancer extends JwtAccessTokenConverter {
 
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
@@ -22,9 +22,9 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         additionalInfo.put("displayName", "Stephen Jobs");
         additionalInfo.put("authorities", user.getAuthorities());
 
-        ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
-
-        return accessToken;
+        DefaultOAuth2AccessToken customAccessToken = new DefaultOAuth2AccessToken(accessToken);
+        customAccessToken.setAdditionalInformation(additionalInfo);
+        return super.enhance(customAccessToken, authentication);
     }
 
 }

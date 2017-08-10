@@ -1,7 +1,9 @@
 package demo;
 
 import java.security.KeyPair;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
@@ -10,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,8 +21,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Controller;
@@ -68,35 +67,25 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
   @Configuration
   @EnableAuthorizationServer
-  protected static class OAuth2Config extends AuthorizationServerConfigurerAdapter {
+  protected static class OAuth2Config extends AuthorizationServerConfigurerAdapter  {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public JwtAccessTokenConverter asymmetricAccessTokenConverter() {
-      JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-      KeyPair keyPair = new KeyStoreKeyFactory(new ClassPathResource("keystore.jks"), "foobar".toCharArray()).getKeyPair("test");
-      converter.setKeyPair(keyPair);
-      return converter;
-    }
-
     @Bean
     public JwtAccessTokenConverter symmetricAccessTokenConverter() {
-      JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-      converter.setSigningKey("123xyz");
+      JwtAccessTokenConverter converter = new CustomTokenEnhancer();
+      converter.setSigningKey("demo-client-123xyz");
       return converter;
     }
-
-    @Bean
-    protected JwtAccessTokenConverter jwtTokenEnhancer() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("my_signing_key");
-        return converter;
-    }
-
-    @Bean public TokenEnhancer customTokenEnhancer() {
-        return new CustomTokenEnhancer();
-    }
+    
+    // @Bean
+    // public JwtAccessTokenConverter asymmetricAccessTokenConverter() {
+    //   JwtAccessTokenConverter converter = new CustomTokenEnhancer();
+    //   KeyPair keyPair = new KeyStoreKeyFactory(new ClassPathResource("keystore.jks"), "foobar".toCharArray()).getKeyPair("test");
+    //   converter.setKeyPair(keyPair);
+    //   return converter;
+    // }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -105,20 +94,17 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
           .secret("demo-client-123xyz")
           .accessTokenValiditySeconds(7200) // 2 hours in seconds
           .resourceIds("oauth2-ressource")
-          .authorizedGrantTypes("authorization_code", "refresh_token", "password")
+          .authorizedGrantTypes("implicit", "authorization_code", "refresh_token", "password")
           .scopes("name", "email", "profile", "calendar");
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-      
-      TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
-      enhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer(), asymmetricAccessTokenConverter()));
 
       endpoints
-        .tokenEnhancer(enhancerChain)
         .authenticationManager(authenticationManager)
-        .accessTokenConverter(asymmetricAccessTokenConverter());
+        // .accessTokenConverter(asymmetricAccessTokenConverter());
+        .accessTokenConverter(symmetricAccessTokenConverter());
 
    }
 

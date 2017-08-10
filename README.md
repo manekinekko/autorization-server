@@ -13,3 +13,5 @@ OAuth2 endpoints are:
   OAuth2 spec). Can be used to decode a token remotely.
 
 * User login and password are: `user:password`
+
+More information about Spring Security OAuth2 [here](https://github.com/spring-projects/spring-security-oauth/blob/master/docs/oauth2.md)
