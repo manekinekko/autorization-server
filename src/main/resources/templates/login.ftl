@@ -38,7 +38,7 @@
             <div class="mdl-card__actions mdl-card--border">
                 <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" type="submit">LOGIN</button>
             </div>
-            <input type="hidden" id="csrf_token" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <#--  <input type="hidden" id="csrf_token" name="${_csrf.parameterName}" value="${_csrf.token}" />  -->
         </form>
     </div>
 </body>

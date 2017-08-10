@@ -29,7 +29,7 @@
         </div>
         <form name="confirmationForm" action="/oauth/authorize" method="post" class="mdl-card__actions mdl-card--border" style="display: flex;justify-content: space-between;">
             <input name="user_oauth_approval" value="true" type="hidden" />
-            <input type="hidden" id="csrf_token" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <#--  <input type="hidden" id="csrf_token" name="${_csrf.parameterName}" value="${_csrf.token}" />  -->
             <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" type="submit">DECLINE</button>
             <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" type="submit">AUTHORIZE</button>
         </form>

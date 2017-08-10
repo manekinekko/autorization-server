@@ -56,6 +56,7 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated();
+      http.csrf().disable();
     }
 
     @Override
@@ -99,7 +100,11 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-      clients.inMemory().withClient("demo-client-123xyz").secret("demo-client-123xyz")
+      clients.inMemory()
+          .withClient("demo-client-123xyz")
+          .secret("demo-client-123xyz")
+          .accessTokenValiditySeconds(7200) // 2 hours in seconds
+          .resourceIds("oauth2-ressource")
           .authorizedGrantTypes("authorization_code", "refresh_token", "password")
           .scopes("name", "email", "profile", "calendar");
     }
@@ -111,8 +116,8 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
       enhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer(), asymmetricAccessTokenConverter()));
 
       endpoints
-        .authenticationManager(authenticationManager)
         .tokenEnhancer(enhancerChain)
+        .authenticationManager(authenticationManager)
         .accessTokenConverter(asymmetricAccessTokenConverter());
 
    }
