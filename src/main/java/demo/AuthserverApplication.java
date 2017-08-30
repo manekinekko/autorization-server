@@ -1,13 +1,11 @@
 package demo;
 
-import java.security.KeyPair;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -74,7 +71,8 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
     @Bean
     public JwtAccessTokenConverter symmetricAccessTokenConverter() {
-      JwtAccessTokenConverter converter = new CustomTokenEnhancer();
+      // JwtAccessTokenConverter converter = new CustomTokenEnhancer();
+      JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
       converter.setSigningKey("demo-client-123xyz");
       return converter;
     }
@@ -103,8 +101,8 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
       endpoints
         .authenticationManager(authenticationManager)
-        // .accessTokenConverter(asymmetricAccessTokenConverter());
         .accessTokenConverter(symmetricAccessTokenConverter());
+        // .accessTokenConverter(symmetricAccessTokenConverter());
 
    }
 

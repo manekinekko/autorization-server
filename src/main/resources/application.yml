@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  context-path: /
+  session:
+    cookie:
+      name: UISESSION
+  user:
+    password: password
+  ignored: /css/**,/js/**,/favicon.ico,/webjars/**
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+security:
+  oauth2:
+    client:
+      clientId: demo-client-123xyz
+      clientSecret: demo-client-123xyz
+    resource:
+      userInfoUri: /auth/user/me
