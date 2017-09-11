@@ -1,1 +1,1 @@
-ngrok http --subdomain=wassimchegham 8080
+ngrok http 8080
